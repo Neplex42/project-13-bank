@@ -1,0 +1,35 @@
+@import '../../styles/global/_helpers';
+
+.errorPage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    font-size: 2.4rem;
+    font-weight: $weight-medium;
+
+    .text404 {
+        font-size: 13rem;
+        text-align: center;
+
+    }
+
+    .errorMessage {
+        font-size: 2.4rem;
+        margin-top: 2rem;
+        margin-bottom: 4rem;
+        text-align: center;
+    }
+
+    .homeLink {
+        text-decoration: underline;
+        color: $logo-blue;
+
+        &:hover {
+            cursor: pointer;
+            filter: brightness(0.8);
+        }
+    }
+}
