@@ -17,7 +17,7 @@ const Header = () => {
           <h1 className="sr-only">Argent Bank</h1>
         </NavLink>
         <div>
-          <NavLink to={"/user/id"} className="main-nav-item" href="./user.html">
+          <NavLink to={"/profile"} className="main-nav-item">
             <FontAwesomeIcon icon={faCircleUser} />
             Tony
           </NavLink>

@@ -22,7 +22,7 @@ const router = createBrowserRouter(
           <Route path="/" element={<Root />} />
           <Route path="/login" element={<Login />} />
           <Route
-              path="user/:userId"
+              path="profile"
               element={<UserPage />}
           />
           <Route path="*" element={<Error />} />
