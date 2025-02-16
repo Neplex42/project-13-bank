@@ -3,7 +3,7 @@ import authReducer from "./reducer/authReducer.js";
 
 export default configureStore({
   reducer: {
-    auth: authReducer
+    auth: authReducer,
   },
   devTools: true
 })
