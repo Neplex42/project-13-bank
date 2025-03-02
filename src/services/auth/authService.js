@@ -40,8 +40,30 @@ const getUserProfile = async (token) => {
   }
 }
 
+const updateUserProfile = async (userData, token) => {
+  try {
+    const response = await axios.put(`${backendURL}/user/profile`, userData, {
+      headers: {
+        authorization: `Bearer ${token}`
+      }
+    })
+
+    if (response.status === 401 || response.status === 403) {
+      localStorage.removeItem('userToken')
+    }
+    console.log('response.data', response.data)
+    return response.data
+
+  } catch (error) {
+    console.error('Error in authService.js', error)
+    throw new Error(error)
+  }
+
+}
+
 export const authService = {
   logout,
   login,
-  getUserProfile
+  getUserProfile,
+  updateUserProfile
 }

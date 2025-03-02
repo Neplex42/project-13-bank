@@ -36,6 +36,12 @@
     }
 }
 
+.input-wrapper.center {
+    text-align: center !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+}
+
 .edit-button {
     border-color: #00bc77;
     background-color: #00bc77;

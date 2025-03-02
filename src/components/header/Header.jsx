@@ -32,8 +32,6 @@ const Header = () => {
           <>
             <NavLink to={'/profile'} className='main-nav-item'>
               <FontAwesomeIcon icon={faCircleUser} />
-              {/* get user first name and last name when login*/}
-
               {userInfo.body.firstName} {userInfo.body.lastName}
             </NavLink>
 

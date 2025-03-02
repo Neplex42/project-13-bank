@@ -6,7 +6,7 @@
     align-items: center;
     padding: 5px 20px;
 
-    a {
+    a, button {
         font-weight: bold;
         color: #2c3e50;
 
@@ -18,6 +18,14 @@
         &:hover {
             color: #42b983;
         }
+    }
+
+    button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: inherit;
     }
 
     .main-nav-item {
