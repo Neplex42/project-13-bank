@@ -51,7 +51,7 @@ const updateUserProfile = async (userData, token) => {
     if (response.status === 401 || response.status === 403) {
       localStorage.removeItem('userToken')
     }
-    console.log('response.data', response.data)
+
     return response.data
 
   } catch (error) {
