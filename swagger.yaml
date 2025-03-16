@@ -1,7 +1,8 @@
 swagger: '2.0'
 info:
   title: Bank Argent API documentation
-  description: Contains all available API endpoints in this codebase
+  description: >
+    Contains all available API endpoints in this codebase. This API allows users to sign up, log in, and manage their financial transactions. Users can create, retrieve, update, and delete transactions, as well as fetch transactions for the current month grouped by account. All transaction endpoints require authentication via a bearer token and the userId to ensure that only the active user's transactions are accessed.
   version: '1.0.0'
   termsOfService: 'http://swagger.io/terms/'
 host: localhost:3001
@@ -60,7 +61,7 @@ paths:
   /user/profile:
     post:
       security:
-        - Bearer: [ ]
+        - Bearer: []
       tags:
         - User Module
       summary: User Profile API
@@ -69,13 +70,12 @@ paths:
         - in: header
           name: Authorization
           description: Attach Bearer JWT token
-          type: string
           required: true
       produces:
         - application/json
       responses:
         '200':
-          description: User profile retrieved successully
+          description: User profile retrieved successfully
           schema:
             $ref: '#/definitions/ApiResponse'
         '400':
@@ -84,7 +84,7 @@ paths:
           description: Internal Server Error
     put:
       security:
-        - Bearer: [ ]
+        - Bearer: []
       tags:
         - User Module
       summary: User Profile API
@@ -93,7 +93,6 @@ paths:
         - in: header
           name: Authorization
           description: Attach Bearer JWT token
-          type: string
           required: true
         - in: body
           name: body
@@ -105,7 +104,7 @@ paths:
         - application/json
       responses:
         '200':
-          description: User profile retrieved successully
+          description: User profile updated successfully
           schema:
             $ref: '#/definitions/ApiResponse'
         '400':
@@ -113,98 +112,221 @@ paths:
         '500':
           description: Internal Server Error
 
-#  PHASE 2: Transactions Module
-
-  /user/transactions:
-    get:
+  /user/{userId}/transactions:
+    post:
       security:
-        - Bearer: [ ]
+        - Bearer: []
       tags:
-        - Transactions Module
-      summary: Retrieve all transactions for the current month
-      parameters:
-        - name: Authorization
-          in: header
-          type: string
-          description: JWT token for authentication
-          required: true
-      responses:
-        200:
-          description: List of transactions for the current month
-          schema:
-            type: array
-            items:
-              $ref: "#/definitions/Transaction"
-        "400":
-          description: Invalid Fields
-        "401":
-          description: Unauthorized
-        "500":
-          description: Internal Server Error
-
-  /user/transactions/{transactionId}:
-    get:
-      security:
-        - Bearer: [ ]
-      tags:
-        - Transactions Module
-      summary: Retrieve details of a specific transaction
+        - Transaction Module
+      summary: Create Transaction
+      description: API for creating a new transaction for the specified user
       parameters:
         - in: header
           name: Authorization
           description: Attach Bearer JWT token
           required: true
-          type: string
         - in: path
-          name: transactionId
-          description: Id of the transaction
+          name: userId
+          description: ID of the user
           required: true
           type: string
-      responses:
-        200:
-          description: Transaction details
-          schema:
-            $ref: "#/definitions/Transaction"
-        401:
-          description: Unauthorized
-        404:
-          description: Transaction not found
-        500:
-          description: Internal Server Error
-
-    put:
-      security:
-        - Bearer: [ ]
-      tags:
-        - Transactions Module
-      summary: Modify an existing transaction (only notes and category)
-      parameters:
-        - in: header
-          name: Authorization
-          description: Attach Bearer JWT token
-          required: true
-          type: string
-        - in: path
-          name: transactionId
-          type: string
-          required: true
-          description: Id of the transaction
         - in: body
           name: body
-          description: Edited Transaction Payload
-          schema:
-            $ref: "#/definitions/TransactionEdited"
+          description: Transaction object that needs to be created
           required: true
+          schema:
+            $ref: '#/definitions/Transaction'
+      produces:
+        - application/json
       responses:
-        200:
-          description: Transaction successfully updated
-        400:
-          description: Invalid request (incorrect transaction data)
-        401:
+        '201':
+          description: Transaction created successfully
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid Fields
+        '401':
           description: Unauthorized
-        404:
+        '500':
+          description: Internal Server Error
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Transaction Module
+      summary: List Transactions
+      description: API for fetching a list of transactions for the specified user
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - in: path
+          name: userId
+          description: ID of the user
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transactions retrieved successfully
+          schema:
+            $ref: '#/definitions/TransactionListResponse'
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+
+  /user/{userId}/transactions/current_month:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Transaction Module
+      summary: Get Transactions for Current Month Grouped by Account
+      description: API for fetching all transactions for the current month for the specified user, grouped by account
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - in: path
+          name: userId
+          description: ID of the user
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transactions retrieved successfully and grouped by account
+          schema:
+            $ref: '#/definitions/TransactionGroupByAccountResponse'
+        '400':
+          description: Invalid Fields
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+
+  /user/{userId}/transactions/{transactionId}:
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - Transaction Module
+      summary: Transaction Details
+      description: API for fetching transaction details for the specified user
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - in: path
+          name: userId
+          description: ID of the user
+          required: true
+          type: string
+        - in: path
+          name: transactionId
+          description: ID of the transaction
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transaction retrieved successfully
+          schema:
+            $ref: '#/definitions/TransactionResponse'
+        '400':
+          description: Invalid Fields
+        '401':
+          description: Unauthorized
+        '404':
           description: Transaction not found
-        500:
+        '500':
+          description: Internal Server Error
+    patch:
+      security:
+        - Bearer: []
+      tags:
+        - Transaction Module
+      summary: Update Transaction
+      description: API for updating a transaction for the specified user
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - in: path
+          name: userId
+          description: ID of the user
+          required: true
+          type: string
+        - in: path
+          name: transactionId
+          description: ID of the transaction to update
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Fields to update in the transaction
+          required: true
+          schema:
+            $ref: '#/definitions/TransactionUpdate'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transaction updated successfully
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid Fields
+        '401':
+          description: Unauthorized
+        '404':
+          description: Transaction not found
+        '500':
+          description: Internal Server Error
+    delete:
+      security:
+        - Bearer: []
+      tags:
+        - Transaction Module
+      summary: Delete Transaction
+      description: API for deleting a transaction for the specified user
+      parameters:
+        - in: header
+          name: Authorization
+          description: Attach Bearer JWT token
+          required: true
+        - in: path
+          name: userId
+          description: ID of the user
+          required: true
+          type: string
+        - in: path
+          name: transactionId
+          description: ID of the transaction to delete
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Transaction deleted successfully
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid Fields
+        '401':
+          description: Unauthorized
+        '404':
+          description: Transaction not found
+        '500':
           description: Internal Server Error
 
 securityDefinitions:
@@ -212,8 +334,10 @@ securityDefinitions:
     type: apiKey
     name: Authorization
     in: header
+
 definitions:
   User:
+    type: object
     properties:
       email:
         type: string
@@ -228,6 +352,7 @@ definitions:
         type: string
         description: user last name
   Login:
+    type: object
     properties:
       email:
         type: string
@@ -240,20 +365,16 @@ definitions:
     properties:
       status:
         type: integer
+        description: HTTP status code
       message:
         type: string
-      body:
-        type: object
-        properties:
-          id:
-            type: string
-          email:
-            type: string
+        description: Response message
   LoginResponse:
     type: object
     properties:
       token:
         type: string
+        description: JWT token
   UserProfile:
     type: object
     properties:
@@ -261,40 +382,77 @@ definitions:
         type: string
       lastName:
         type: string
-
-#  PHASE 2: Transactions definitions
-  TransactionEdited:
-    type: object
-    properties:
-      notes:
-        type: string
-        description: Transaction description
-      category:
-        type: string
-        description: Transaction category
   Transaction:
     type: object
     properties:
       id:
         type: string
         description: Transaction ID
-      date:
+      transactionName:
         type: string
-        format: date
-        description: Transaction date
-      notes:
-        type: string
-        description: Transaction description
-      category:
-        type: string
-        description: Transaction category
-      amount:
+        description: Name of the transaction
+      transactionAmount:
         type: number
-        format: float
-        description: Transaction amount
-    required:
-      - id
-      - date
-      - notes
-      - category
-      - amount
+        format: double
+        description: Amount of the transaction
+      transactionType:
+        type: string
+        description: Type of the transaction
+      accountId:
+        type: string
+        description: ID of the account associated with the transaction
+  TransactionUpdate:
+    type: object
+    properties:
+      transactionName:
+        type: string
+        description: Name of the transaction
+      transactionAmount:
+        type: number
+        format: double
+        description: Amount of the transaction
+      transactionType:
+        type: string
+        description: Type of the transaction
+  TransactionResponse:
+    type: object
+    properties:
+      status:
+        type: integer
+        description: HTTP status code
+      message:
+        type: string
+        description: Response message
+      body:
+        $ref: '#/definitions/Transaction'
+  TransactionListResponse:
+    type: object
+    properties:
+      status:
+        type: integer
+        description: HTTP status code
+      message:
+        type: string
+        description: Response message
+      body:
+        type: array
+        items:
+          $ref: '#/definitions/Transaction'
+  TransactionGroupByAccount:
+    type: object
+    description: Object where each key is an account identifier and the value is an array of transactions belonging to that account.
+    additionalProperties:
+      type: array
+      items:
+        $ref: '#/definitions/Transaction'
+  TransactionGroupByAccountResponse:
+    type: object
+    properties:
+      status:
+        type: integer
+        description: HTTP status code
+      message:
+        type: string
+        description: Response message
+      body:
+        $ref: '#/definitions/TransactionGroupByAccount'
