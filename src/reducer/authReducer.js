@@ -1,9 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { authService } from '../services/auth/authService.js'
 
-// initialize userToken from local storage
+// initialize userToken from local storage or session storage
 const userToken = localStorage.getItem('userToken')
   ? localStorage.getItem('userToken')
+  : sessionStorage.getItem('userToken')
+  ? sessionStorage.getItem('userToken')
   : null
 
 const initialState = {
@@ -86,6 +88,7 @@ const authSlice = createSlice({
     builder
       .addCase(logout.fulfilled, (state) => {
         localStorage.removeItem('userToken')
+        sessionStorage.removeItem('userToken')
         state.loading = false
         state.userInfo = null
         state.userToken = null

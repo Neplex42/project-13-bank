@@ -4,24 +4,30 @@ import axios from 'axios'
 const backendURL = 'http://localhost:3001/api/v1'
 
 /**
- * Déconnecte l'utilisateur en supprimant le token du localStorage
+ * Déconnecte l'utilisateur en supprimant le token du localStorage et sessionStorage
  */
 const logout = () => {
   localStorage.removeItem('userToken')
+  sessionStorage.removeItem('userToken')
 }
 
 /**
  * Authentifie l'utilisateur auprès de l'API
- * @param {Object} userData - Données d'authentification (email, password)
+ * @param {Object} userData - Données d'authentification (email, password, rememberMe)
  * @returns {Object} Réponse de l'API contenant le token et les informations utilisateur
  */
 const login = async (userData) => {
   try {
-    const response = await axios.post(`${backendURL}/user/login`, userData)
+    const { rememberMe, ...loginData } = userData
+    const response = await axios.post(`${backendURL}/user/login`, loginData)
 
-    // Stockage du token dans le localStorage pour persister l'authentification
+    // Stockage du token dans le localStorage ou sessionStorage selon l'option "Remember me"
     if (response.data && response.data.body && response.data.body.token) {
-      localStorage.setItem('userToken', response.data.body.token)
+      if (rememberMe) {
+        localStorage.setItem('userToken', response.data.body.token)
+      } else {
+        sessionStorage.setItem('userToken', response.data.body.token)
+      }
     }
 
     return response.data
@@ -55,6 +61,7 @@ const getUserProfile = async (token) => {
     // Gestion des erreurs d'authentification
     if (response.status === 401 || response.status === 403) {
       localStorage.removeItem('userToken')
+      sessionStorage.removeItem('userToken')
     }
 
     return response.data
@@ -79,6 +86,7 @@ const updateUserProfile = async (userData, token) => {
 
     if (response.status === 401 || response.status === 403) {
       localStorage.removeItem('userToken')
+      sessionStorage.removeItem('userToken')
     }
 
     return response.data

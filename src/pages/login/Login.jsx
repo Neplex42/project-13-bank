@@ -1,7 +1,7 @@
 import './login.scss'
 import { useDispatch, useSelector } from 'react-redux'
 import { useForm } from 'react-hook-form'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { getUserProfile, login } from '../../reducer/authReducer.js'
 
@@ -11,20 +11,20 @@ const Login = () => {
   const dispatch = useDispatch()
   const { register, handleSubmit } = useForm()
   const navigate = useNavigate()
+  const [rememberMe, setRememberMe] = useState(false)
 
   useEffect(() => {
     if (userToken) {
       navigate('/profile')
       dispatch(getUserProfile(userToken))
     }
-  }, [navigate, userToken])
+  }, [navigate, userToken, dispatch])
 
   const submitForm = (data) => {
-    dispatch(login(data))
+    dispatch(login({ ...data, rememberMe }))
   }
 
-  const isAuthError =
-    error && (error.status === 400)
+  const isAuthError = error && error.status === 400
 
   return (
     <>
@@ -56,7 +56,12 @@ const Login = () => {
                 />
               </div>
               <div className="input-remember">
-                <input type="checkbox" id="remember-me" />
+                <input
+                  type="checkbox"
+                  id="remember-me"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
                 <label htmlFor="remember-me">Remember me</label>
               </div>
 
@@ -97,7 +102,12 @@ const Login = () => {
                 />
               </div>
               <div className="input-remember">
-                <input type="checkbox" id="remember-me" />
+                <input
+                  type="checkbox"
+                  id="remember-me"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
                 <label htmlFor="remember-me">Remember me</label>
               </div>
 
