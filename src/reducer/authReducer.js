@@ -11,22 +11,25 @@ const initialState = {
   error: null,
   success: false,
   userInfo: null,
-  userToken
+  userToken,
 }
 
 // Login user
-export const login
-  = createAsyncThunk(
-  'auth/login',
-  async (user, thunkAPI) => {
-    try {
-      return await authService.login(user)
-    } catch (error) {
-      const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
-      return thunkAPI.rejectWithValue(message)
+export const login = createAsyncThunk('auth/login', async (user, thunkAPI) => {
+  try {
+    const result = await authService.login(user)
+    if (result && result.error === true) {
+      return thunkAPI.rejectWithValue(result)
     }
+    return result
+  } catch (error) {
+    const message =
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString()
+    return thunkAPI.rejectWithValue(message)
   }
-)
+})
 
 // Get user profile
 export const getUserProfile = createAsyncThunk(
@@ -35,7 +38,12 @@ export const getUserProfile = createAsyncThunk(
     try {
       return await authService.getUserProfile(token)
     } catch (error) {
-      const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
       return thunkAPI.rejectWithValue(message)
     }
   }
@@ -48,7 +56,12 @@ export const updateUserProfile = createAsyncThunk(
     try {
       return await authService.updateUserProfile(userData, token)
     } catch (error) {
-      const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString()
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
       return thunkAPI.rejectWithValue(message)
     }
   }
@@ -67,7 +80,7 @@ const authSlice = createSlice({
       state.loading = false
       state.error = null
       state.success = false
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -119,7 +132,7 @@ const authSlice = createSlice({
         state.loading = false
         state.error = payload
       })
-  }
+  },
 })
 
 export const { reset } = authSlice.actions
